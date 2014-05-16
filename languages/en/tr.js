@@ -8,7 +8,7 @@ JSM.applyConfig({ currentLocale: {
     "loc-menu-item-report" : "Report",
     "loc-menu-item-help" : "Help",
     "loc-all-systems-ready" : "All systems ready.",
-    "loc-jsmarker-version" : "JSMarker version",
+    "loc-jsmeterkit-version" : "JS Meter Kit version",
     "loc-detected-browser" : "Detected browser",
     "loc-browser-not-compatible": "Browser not compatible.",
     "loc-applying-language-in-progress" : "Applying language in process ...",

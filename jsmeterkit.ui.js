@@ -90,7 +90,7 @@ JSM.ui = {
 
         buildDefaultMessage: function() {
             return JSM._('loc-all-systems-ready') + ' '
-                + JSM._('loc-jsmarker-version') + ': ' + JSM.version
+                + JSM._('loc-jsmeterkit-version') + ': ' + JSM.version
                 + '. ' + JSM._('loc-detected-browser') + ': ' + navigator.appCodeName + '/' + navigator.appVersion;
         },
 
