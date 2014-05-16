@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>JS Marker</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="style.css"/>
+
+    <script src="jsmarker.js"></script>
+    <script src="jsmarker.storage.js"></script>
+    <script src="languages/languages.js"></script>
+    <script src="jsmarker.ui.js"></script>
+
+    <script>
+        JSM.init();
+    </script>
+</head>
+<body>
+    <header class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-static-top bs-docs-nav" id="top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#status-bar">JS Marker</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#status-bar" class="dropdown-toggle menu-item-project" data-toggle="dropdown-menu">
+                        <span class="glyphicon glyphicon-inbox"></span>
+                        <span class="loc-menu-item-project">Project</span> <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">New</a></li>
+                        <li><a href="#">Open ...</a></li>
+                        <li><a href="#">Save</a></li>
+                        <li><a href="#">Save As ...</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown">
+                            <a href="#">Open Recent <b class="caret"></b></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#">Delete Project</a></li>
+                    </ul>
+                </li>
+                <li id="menu-item-console" class="active" >
+                    <a>
+                        <span class="glyphicon glyphicon-leaf"></span>
+                        <span class="loc-menu-item-console">Console</span>
+                    </a>
+                </li>
+                <li id="menu-item-report">
+                    <a>
+                        <span class="glyphicon glyphicon-tasks"></span>
+                        <span class="loc-menu-item-report">Report</span>
+                    </a>
+                </li>
+                <li id="menu-item-help">
+                    <a>
+                        <span class="glyphicon glyphicon-book"></span>
+                        <span class="loc-menu-item-help">Help</span>
+                    </a>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <select id='menu-language-select' class="form-control">
+                    <option>-- Select language --</option>
+                </select>
+            </form>
+        </div>
+    </header>
+    <div id="status-bar" class="container">
+        <span id="status-bar-icon" class="glyphicon glyphicon-refresh rotate"></span>
+        <span id="status-bar-message">...</span>
+    </div>
+
+    <div id="console-container" class="container">
+        console
+    </div>
+    <div id="report-container" class="container hide">
+        report
+    </div>
+    <div id="help-container" class="container hide">
+        help
+    </div>
+</body>
+</html>

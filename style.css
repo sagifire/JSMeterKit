@@ -1,0 +1,44 @@
+#status-bar {
+    margin-top: 60px;
+    margin-bottom: 10px;
+}
+
+#status-bar-icon.red {
+    color: #cc0000;
+}
+
+#status-bar-icon.green {
+    color: #00b000;
+}
+
+#menu-language-select {
+    padding-left: 24px;
+}
+
+#menu-language-select option {
+    padding-left: 24px;
+}
+
+#top .navbar-nav > li {
+    cursor: pointer;
+}
+
+#top .navbar-nav > li.active {
+    box-shadow:  0px -60px 70px 0px #777;
+}
+
+.rotate {
+    animation-name: anim-rotate;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 1s;
+}
+
+@keyframes anim-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
