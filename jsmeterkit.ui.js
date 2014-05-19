@@ -11,11 +11,14 @@ JSM.ui = {
 
     init: function() {
         this.statusBar.init();
-        this.tabMenu.init();
-        this.languageSelect.init();
 
         JSM.testBrowserFeatures();
         JSM.settings = JSM.storage.readSettings();
+
+        this.tabMenu.init();
+        this.languageSelect.init();
+        this.console.init();
+
         if (JSM.settings.language) {
             this.languageSelect.setSelectValue(JSM.settings.language);
         }
@@ -27,7 +30,6 @@ JSM.ui = {
     },
 
     initRetranslate: function() {
-        console.log('start retranslate ' + JSM.ui.languageSelect.elSelect.value);
         this.statusBar.showMessage(JSM._('loc-applying-language-in-progress'), this.statusBar.STATE_PROCESS);
 
         var src = 'languages/' + this.languageSelect.elSelect.value + '/tr.js';
@@ -43,7 +45,8 @@ JSM.ui = {
         for (var trKey in currentLocale) {
             var elList = document.querySelectorAll('.' + trKey);
             for( var i = 0, l = elList.length; i < l; i++) {
-                elList[i].innerHTML = currentLocale[trKey];
+                if (!elList.hasOwnProperty(trKey))
+                    elList[i].innerHTML = currentLocale[trKey];
             }
         }
         JSM.ui.statusBar.defaultMessage = JSM.ui.statusBar.buildDefaultMessage();
@@ -209,6 +212,144 @@ JSM.ui = {
             }
 
             tabMenu.activeTab = this.tabName;
+        }
+    },
+    console: {
+        init: function() {
+            this.commandEditor.init();
+            this.journal.init();
+        },
+        commandEditor: {
+            elCt: null,
+            codeMirror: null,
+            init: function() {
+                this.elCt = document.querySelector('#command-editor-container');
+                this.codeMirror = CodeMirror(this.elCt, {
+                    mode: 'javascript',
+                    lineNumbers: true
+                });
+
+                this.codeMirror.display.wrapper.classList.add("panel");
+                this.codeMirror.display.wrapper.classList.add("panel-default");
+
+                document.querySelector('#command-editor-execute').onclick = this.execute;
+            },
+            execute: function() {
+                var code = JSM.ui.console.commandEditor.codeMirror.getValue();
+                if (code) {
+                    try {
+                        var result = eval(code);
+                        JSM.ui.console.journal.appendNote(
+                            'loc-code-has-been-executed',
+                            ['loc-result', '<pre>' + JSON.stringify(result, null, '\t') + '</pre>'],
+                            JSM.ui.console.journal.NOTE_INFO,
+                            true);
+                    } catch (E) {
+                        console.log(E);
+                        JSM.ui.console.journal.appendNote(
+                            'loc-code-executing-has-been-failed',
+                            ['loc-error', E.message, E.stack],
+                            JSM.ui.console.journal.NOTE_ERROR,
+                            true);
+                    }
+                } else {
+                    JSM.ui.showNotify(JSM._('loc-code-is-empty'), JSM.ui.statusBar.STATE_ERROR);
+                }
+
+            }
+        },
+        journal: {
+            NOTE_DEFAULT : 0,
+            NOTE_SUCCESS : 1,
+            NOTE_INFO    : 2,
+            NOTE_WARNING : 3,
+            NOTE_ERROR   : 4,
+
+            noteClasses: {
+                0: 'note-default',
+                1: 'note-success',
+                2: 'note-info',
+                3: 'note-warning',
+                4: 'note-danger'
+            },
+
+            notesLimit: 25, // default value
+            elNotesLimitSelect: null,
+            elNotesCt: null,
+
+            init: function() {
+                if (JSM.settings.notesLimit) {
+                    this.notesLimit = JSM.settings.notesLimit;
+                }
+
+                this.elNotesCt = document.querySelector('#notes-container');
+                this.elNotesLimitSelect = document.querySelector('#journal-notes-limit');
+                this.elNotesLimitSelect.value = this.notesLimit;
+                this.elNotesLimitSelect.onchange = this.onChange;
+            },
+
+            appendNote: function(title, content, type, tr) {
+                var elNote = document.createElement('div');
+                elNote.classList.add('note');
+                if ('number' === typeof(type) && type > -1)
+                    elNote.classList.add(this.noteClasses[type]);
+
+                if ('string' === typeof(title)) {
+                    var elNoteTitle = document.createElement('h4');
+                    if (tr && 0 === title.indexOf('loc-')) {
+                        elNoteTitle.innerHTML = JSM._(title);
+                        elNoteTitle.classList.add(title);
+                    } else {
+                        elNoteTitle.innerHTML = title;
+                    }
+                    elNote.appendChild(elNoteTitle);
+                }
+
+                var contentIsArray = (content instanceof Array);
+                var contentIndex = (contentIsArray) ? 0 : -1;
+                var length = (contentIsArray) ?  content.length: -1;
+                var contentText = content;
+                do {
+                    if (contentIndex > -1) {
+                        contentText = content[contentIndex];
+                    }
+
+                    var elNoteContent = document.createElement('p');
+                    if (tr && 0 === contentText.indexOf('loc-')) {
+                        elNoteContent.innerHTML = JSM._(contentText);
+                        elNoteContent.classList.add(contentText);
+                    } else {
+                        elNoteContent.innerHTML = contentText;
+                    }
+
+                    elNote.appendChild(elNoteContent);
+                } while(contentIsArray && ++contentIndex < length);
+                // todo content
+
+                this.elNotesCt.insertBefore(elNote, this.elNotesCt.firstChild);
+                this.applyNotesLimit();
+            },
+
+            onChange: function() {
+                var journal = JSM.ui.console.journal;
+                journal.notesLimit = parseInt(this.value);
+                JSM.settings.notesLimit = journal.notesLimit;
+                JSM.storage.saveSettings(JSM.settings);
+                journal.applyNotesLimit();
+            },
+
+            applyNotesLimit: function() {
+                var notesList = this.elNotesCt.querySelectorAll('div.note');
+                if (!notesList)
+                    return;
+                var notesToRemove = notesList.length - this.notesLimit;
+                if (notesToRemove > 0) {
+                    for (var i = 0; i < notesToRemove; i++) {
+                        console.log('remove >>>', this.notesLimit + i, 'of', notesList.length);
+                        this.elNotesCt.removeChild(notesList[this.notesLimit + i]);
+                    }
+                }
+            }
         }
     }
 }

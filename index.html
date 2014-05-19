@@ -6,8 +6,11 @@
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="style.css"/>
 
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
     <script src="jsmeterkit.js"></script>
     <script src="jsmeterkit.storage.js"></script>
     <script src="languages/languages.js"></script>
@@ -17,7 +20,7 @@
         JSM.init();
     </script>
 </head>
-<body>
+<body class="show-hotkeys">
     <header class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-static-top bs-docs-nav" id="top">
         <div class="container">
             <div class="navbar-header">
@@ -62,7 +65,7 @@
                 </li>
             </ul>
             <form class="navbar-form navbar-right">
-                <select id='menu-language-select' class="form-control">
+                <select id="menu-language-select" class="form-control">
                     <option>-- Select language --</option>
                 </select>
             </form>
@@ -74,7 +77,34 @@
     </div>
 
     <div id="console-container" class="container">
-        console
+        <div id="command-editor-container" class="row"></div>
+        <div class="row">
+            <button id="command-editor-execute" type="button" class="btn btn-black">
+                <span class="hotkey">CTRL+Enter</span>
+                <span class="glyphicon glyphicon-fire"></span>
+                <span class="loc-execute">Execute</span>
+            </button>
+        </div>
+        <div id="journal-container" class="row">
+            <h3 class="page-header">
+                <span class="loc-journal">Journal</span>
+                <button class="btn btn-default pull-right"><span class="glyphicon glyphicon-trash"></span></button>
+                <form class="form form-inline pull-right">
+                    <div class="form-group">
+                        <label class="loc-notes-limit">Notes limit</label>:
+                        <select id="journal-notes-limit" class="form-control">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="75">75</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="200">200</option>
+                        </select>
+                    </div>
+                </form>
+            </h3>
+            <div id="notes-container"></div>
+        </div>
     </div>
     <div id="report-container" class="container hide">
         report

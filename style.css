@@ -27,6 +27,116 @@
     box-shadow:  0px -60px 70px 0px #777;
 }
 
+.btn-black {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 1px rgba(0, 0, 0, 0.075);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+    background-image: linear-gradient(to bottom, #3C3C3C 0px, #222222 100%);
+    background-repeat: repeat-x;
+    border-color: #333;
+    text-shadow: 0 1px 0 #333;
+    color: #fff;
+}
+
+.btn-black:active, .btn-black.active {
+    background-color: #E0E0E0;
+    border-color: #DBDBDB;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.125) inset;
+}
+.btn-black:active {
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.125) inset;
+}
+.btn-black:hover, .btn-black:active,  .btn-black:focus{
+    color: #fff;
+    background-color: #222222;
+    background-position: 0 -15px;
+}
+
+.hotkey {
+    display: none;
+    position: absolute;
+    padding: 5px;
+    margin-top: 30px;
+    box-shadow: none;
+    text-shadow: none;
+    border-radius: 5px;
+    background: #ccc;
+    opacity: 0.5;
+    color: #000;
+    border: 1px solid #888;
+}
+
+.show-hotkeys *:hover > .hotkey {
+    display: block;
+}
+
+button > .hotkey {
+    margin-left: -14px;
+}
+
+#journal-container {
+    margin-top: 10px;
+}
+
+#journal-container .page-header form {
+    font-size: 14px;
+}
+
+#journal-notes-limit {
+    margin-right: 5px;
+}
+
+.note {
+    border-left: 3px solid #EEEEEE;
+    margin: 20px 0;
+    padding: 20px;
+}
+.note h4 {
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+.note p:last-child {
+    margin-bottom: 0;
+}
+.note code, .note pre {
+    background-color: #FFFFFF;
+    border-radius: 3px;
+}
+.note-default {
+    background-color: #eeeeee;
+    border-color: #333333;
+}
+.note-default h4 {
+    color: #333333;
+}
+.note-danger {
+    background-color: #F2DEDE;
+    border-color: #D9534F;
+}
+.note-danger h4 {
+    color: #D9534F;
+}
+.note-warning {
+    background-color: #FCF8E3;
+    border-color: #F0AD4E;
+}
+.note-warning h4 {
+    color: #F0AD4E;
+}
+.note-info {
+    background-color: #D9EDF7;
+    border-color: #5BC0DE;
+}
+.note-info h4 {
+    color: #5BC0DE;
+}
+.note-success {
+    background-color: #DFF0D8;
+    border-color: #3C763D;
+}
+.note-success h4 {
+    color: #3C763D;
+}
+
 .rotate {
     animation-name: anim-rotate;
     animation-iteration-count: infinite;
