@@ -27,22 +27,39 @@
                 <a class="navbar-brand" href="#status-bar">JS Mater Kit</a>
             </div>
             <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#status-bar" class="dropdown-toggle menu-item-project" data-toggle="dropdown-menu">
-                        <span class="glyphicon glyphicon-inbox"></span>
+                <li id="menu-project" class="dropdown">
+                    <a href="#status-bar" class="dropdown-toggle" href="#">
+                    <span class="glyphicon glyphicon-inbox"></span>
                         <span class="loc-menu-item-project">Project</span> <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">New</a></li>
-                        <li><a href="#">Open ...</a></li>
-                        <li><a href="#">Save</a></li>
-                        <li><a href="#">Save As ...</a></li>
+                        <li><a href="#">
+                            <span class="glyphicon glyphicon-file"></span>
+                            <span class="loc-new">New</span>
+                        </a></li>
+                        <li><a href="#">
+                            <span class="glyphicon glyphicon-folder-close"></span>
+                            <span class="loc-open-_">Open ...</span>
+                        </a></li>
+                        <li><a href="#">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                            <span class="loc-save">Save</span>
+                        </a></li>
+                        <li><a href="#">
+                            <span class="glyphicon glyphicon-floppy-save"></span>
+                            <span class="loc-save-as-_">Save As ...</span>
+                        </a></li>
                         <li class="divider"></li>
                         <li class="dropdown">
-                            <a href="#">Open Recent <b class="caret"></b></a>
+                            <a href="#">
+                                <span class="loc-reopen">Reopen</span>
+                                <b class="sub"></b></a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="#">Delete Project</a></li>
+                        <li><a href="#">
+                            <span class="glyphicon glyphicon-trash"></span>
+                            <span class="loc-delete-project">Delete Project</span>
+                        </a></li>
                     </ul>
                 </li>
                 <li id="menu-item-console" class="active" >
@@ -88,7 +105,8 @@
         <div id="journal-container" class="row">
             <h3 class="page-header">
                 <span class="loc-journal">Journal</span>
-                <button class="btn btn-default pull-right"><span class="glyphicon glyphicon-trash"></span></button>
+                <button id="journal-btn-clean" class="btn btn-default pull-right"><span
+                        class="glyphicon glyphicon-trash"></span></button>
                 <form class="form form-inline pull-right">
                     <div class="form-group">
                         <label class="loc-notes-limit">Notes limit</label>:

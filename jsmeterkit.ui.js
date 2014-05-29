@@ -16,6 +16,7 @@ JSM.ui = {
         JSM.settings = JSM.storage.readSettings();
 
         this.tabMenu.init();
+        this.projectMenu.init();
         this.languageSelect.init();
         this.console.init();
 
@@ -170,7 +171,7 @@ JSM.ui = {
             var langId = languageSelect.elSelect.value;
             languageSelect.setSelectFlag(langId);
 
-            if (JSM.ui.retranslateInProgress && langId != languageSelect.activeLangKey) {
+            if (JSM.ui.retranslateInProgress && langId === languageSelect.activeLangKey) {
                 languageSelect.setSelectValue(languageSelect.activeLangKey);
             }
             JSM.ui.initRetranslate();
@@ -210,8 +211,42 @@ JSM.ui = {
                     tabObject.elMenu.classList.remove('active');
                 }
             }
-
             tabMenu.activeTab = this.tabName;
+        }
+    },
+    projectMenu: {
+        elCt: null,
+        init: function () {
+            this.elCt = document.querySelector('#menu-project');
+            this.elCt.onclick = this.onDropdownToggle;
+            window.addEventListener('click', this.onBodyClick, true);
+        },
+        onDropdownToggle: function () {
+            var projectMenu = JSM.ui.projectMenu;
+            if (projectMenu.elCt.classList.contains('open')) {
+                projectMenu.elCt.classList.remove('open');
+            } else {
+                projectMenu.elCt.classList.add('open');
+            }
+        },
+        onBodyClick: function (event) {
+            setTimeout(JSM.createScopeFunction(function () {
+                var currentElement = this.originalTarget;
+                var focusFlag = false;
+                while ('string' === typeof(currentElement.tagName)) {
+                    if (currentElement.classList.contains('open')) {
+                        focusFlag = true;
+                        break;
+                    }
+                    currentElement = currentElement.parentNode;
+                }
+                if (!focusFlag) {
+                    var openElement = document.querySelector('.open');
+                    if (openElement) {
+                        openElement.classList.remove('open');
+                    }
+                }
+            }, event), 1);
         }
     },
     console: {
@@ -248,7 +283,7 @@ JSM.ui = {
                         console.log(E);
                         JSM.ui.console.journal.appendNote(
                             'loc-code-executing-has-been-failed',
-                            ['loc-error', E.message, E.stack],
+                            [E.message, E.stack],
                             JSM.ui.console.journal.NOTE_ERROR,
                             true);
                     }
@@ -273,6 +308,8 @@ JSM.ui = {
                 4: 'note-danger'
             },
 
+            items: [],
+
             notesLimit: 25, // default value
             elNotesLimitSelect: null,
             elNotesCt: null,
@@ -285,10 +322,14 @@ JSM.ui = {
                 this.elNotesCt = document.querySelector('#notes-container');
                 this.elNotesLimitSelect = document.querySelector('#journal-notes-limit');
                 this.elNotesLimitSelect.value = this.notesLimit;
-                this.elNotesLimitSelect.onchange = this.onChange;
+                this.elNotesLimitSelect.onchange = this.onLimitChange;
+                document.querySelector('#journal-btn-clean').onclick = this.onCleanClick;
             },
 
             appendNote: function(title, content, type, tr) {
+
+                var noteItem = { title: title, content: content, type: type, tr: tr };
+                this.items.push(noteItem);
                 var elNote = document.createElement('div');
                 elNote.classList.add('note');
                 if ('number' === typeof(type) && type > -1)
@@ -330,7 +371,7 @@ JSM.ui = {
                 this.applyNotesLimit();
             },
 
-            onChange: function() {
+            onLimitChange: function () {
                 var journal = JSM.ui.console.journal;
                 journal.notesLimit = parseInt(this.value);
                 JSM.settings.notesLimit = journal.notesLimit;
@@ -349,6 +390,14 @@ JSM.ui = {
                         this.elNotesCt.removeChild(notesList[this.notesLimit + i]);
                     }
                 }
+
+                var notesToRemove = this.items.length - this.notesLimit;
+                this.items.splice(this.notesLimit, notesToRemove);
+            },
+
+            onCleanClick: function () {
+                JSM.ui.console.journal.elNotesCt.innerHTML = "";
+                JSM.ui.console.journal.items = [];
             }
         }
     }
