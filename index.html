@@ -20,28 +20,36 @@
         JSM.init();
     </script>
 </head>
-<body class="show-hotkeys">
+<body>
     <header class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-static-top bs-docs-nav" id="top">
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#status-bar">JS Mater Kit</a>
             </div>
             <ul class="nav navbar-nav">
+                <li class="divider"></li>
                 <li id="menu-project" class="dropdown">
                     <a href="#status-bar" class="dropdown-toggle" href="#">
-                    <span class="glyphicon glyphicon-inbox"></span>
-                        <span class="loc-menu-item-project">Project</span> <b class="caret"></b>
+                        <span class="glyphicon glyphicon-inbox"></span>
+                        <span class="loc-menu-item-project">Project</span>
+                        <b class="caret"></b>
+                        <span id="menu-item-save">
+                            <button class="btn btn-sm btn-black" disabled><span class="glyphicon glyphicon-floppy-disk"></span></button>
+                        </span>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#">
+                            <span class="hotkey">CTRL+N</span>
                             <span class="glyphicon glyphicon-file"></span>
                             <span class="loc-new">New</span>
                         </a></li>
                         <li><a href="#">
+                            <span class="hotkey">CTRL+O</span>
                             <span class="glyphicon glyphicon-folder-close"></span>
                             <span class="loc-open-_">Open ...</span>
                         </a></li>
                         <li><a href="#">
+                            <span class="hotkey">CTRL+S</span>
                             <span class="glyphicon glyphicon-floppy-disk"></span>
                             <span class="loc-save">Save</span>
                         </a></li>
@@ -62,6 +70,7 @@
                         </a></li>
                     </ul>
                 </li>
+                <li class="divider"></li>
                 <li id="menu-item-console" class="active" >
                     <a>
                         <span class="glyphicon glyphicon-leaf"></span>
@@ -80,6 +89,7 @@
                         <span class="loc-menu-item-help">Help</span>
                     </a>
                 </li>
+                <li class="divider"></li>
             </ul>
             <form class="navbar-form navbar-right">
                 <select id="menu-language-select" class="form-control">
@@ -94,15 +104,16 @@
     </div>
 
     <div id="console-container" class="container">
-        <div id="command-editor-container" class="row"></div>
-        <div class="row">
+        <div id="command-editor-container"></div>
+        <div id="command-editor-splitter"><div></div></div>
+        <div>
             <button id="command-editor-execute" type="button" class="btn btn-black">
-                <span class="hotkey">CTRL+Enter</span>
+                <span class="hotkey">CTRL+ENTER</span>
                 <span class="glyphicon glyphicon-fire"></span>
                 <span class="loc-execute">Execute</span>
             </button>
         </div>
-        <div id="journal-container" class="row">
+        <div id="journal-container">
             <h3 class="page-header">
                 <span class="loc-journal">Journal</span>
                 <button id="journal-btn-clean" class="btn btn-default pull-right"><span
@@ -128,7 +139,16 @@
         report
     </div>
     <div id="help-container" class="container hide">
-        help
+        <div id="show-hotkeys-switch-container">
+            <span class="loc-show-hotkeys">Show hotkeys</span>:
+            <div class="btn-group">
+                <button id="btn-show-hotkeys-on" class="btn btn-default loc-switch-on">On</button>
+                <button id="btn-show-hotkeys-off" class="btn btn-default loc-switch-off active">Off</button>
+            </div>
+        </div>
+        <div>
+            help
+        </div>
     </div>
 </body>
 </html>

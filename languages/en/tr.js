@@ -17,6 +17,9 @@ JSM.applyConfig({ currentLocale: {
     "loc-execute" : "Execute",
     "loc-journal" : "Journal",
     "loc-notes-limit" : "Notes limit",
+    "loc-show-hotkeys" : "Show hotkeys",
+    "loc-switch-on" : "On",
+    "loc-switch-off" : "Off",
     // notify
     "loc-all-systems-ready" : "All systems ready.",
     "loc-jsmeterkit-version" : "JS Meter Kit version",
@@ -30,5 +33,6 @@ JSM.applyConfig({ currentLocale: {
     "loc-code-has-been-executed" : "Code has been executed",
     "loc-code-executing-has-been-failed" : "Code executing has been failed",
     "loc-result" : "Result",
-    "loc-error" : "Error"
+    "loc-error" : "Error",
+
 }});

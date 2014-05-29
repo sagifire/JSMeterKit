@@ -13,6 +13,9 @@ JSM.applyConfig({ currentLocale: {
     "loc-execute": "Виконати",
     "loc-journal": "Журнал",
     "loc-notes-limit": "Кількість запиcів",
+    "loc-show-hotkeys" : "Показувати гарячі клавіші",
+    "loc-switch-on" : "Вкл",
+    "loc-switch-off" : "Викл",
     // notify
     "loc-all-systems-ready": "Всі системи готові.",
     "loc-jsmeterkit-version": "Версія JS Meter Kit",

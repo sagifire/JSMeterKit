@@ -19,6 +19,10 @@ JSM.ui = {
         this.projectMenu.init();
         this.languageSelect.init();
         this.console.init();
+        this.report.init();
+        this.help.init();
+
+        this.hotkeys.init();
 
         if (JSM.settings.language) {
             this.languageSelect.setSelectValue(JSM.settings.language);
@@ -221,7 +225,9 @@ JSM.ui = {
             this.elCt.onclick = this.onDropdownToggle;
             window.addEventListener('click', this.onBodyClick, true);
         },
-        onDropdownToggle: function () {
+        onDropdownToggle: function (event) {
+            if ('BUTTON' === event.originalTarget.tagName)
+                return;
             var projectMenu = JSM.ui.projectMenu;
             if (projectMenu.elCt.classList.contains('open')) {
                 projectMenu.elCt.classList.remove('open');
@@ -268,6 +274,8 @@ JSM.ui = {
                 this.codeMirror.display.wrapper.classList.add("panel-default");
 
                 document.querySelector('#command-editor-execute').onclick = this.execute;
+
+                this.splitter.init();
             },
             execute: function() {
                 var code = JSM.ui.console.commandEditor.codeMirror.getValue();
@@ -291,6 +299,60 @@ JSM.ui = {
                     JSM.ui.showNotify(JSM._('loc-code-is-empty'), JSM.ui.statusBar.STATE_ERROR);
                 }
 
+            },
+
+            splitter: {
+                RESIZING_TIMEOUT: 20,
+                MIN_HEIGHT: 300,
+                START_POSITION: null,
+                lastResizingTime: null,
+                resizingFlag: false,
+                startY: 0,
+
+                init: function() {
+                    var splitter = document.querySelector('#command-editor-splitter');
+                    splitter.onmousedown = this.onsplitterMouseDown;
+                    splitter.onmousemove = this.onsplitterMouseMove;
+                    document.body.addEventListener('mouseup', this.onsplitterMouseUp);
+                    document.body.addEventListener('mousemove', this.onsplitterMouseMove);
+
+                    if (!JSM.settings.consoleEditorHeight) {
+                        JSM.settings.consoleEditorHeight = this.MIN_HEIGHT + 200;
+                    }
+
+                    JSM.ui.console.commandEditor.codeMirror.setSize(null, JSM.settings.consoleEditorHeight);
+                    this.START_POSITION = JSM.ui.console.commandEditor.codeMirror.getWrapperElement().offsetTop;
+                },
+                onsplitterMouseDown: function(event) {
+                    var splitter = JSM.ui.console.commandEditor.splitter;
+                    if (!splitter.resizingFlag && 1 === event.which) {
+                        splitter.resizingFlag = true;
+                        startY = event.pageY;
+                        var datetime = new Date();
+                        splitter.lastResizingTime = datetime.getTime() + splitter.RESIZING_TIMEOUT;
+                    }
+                },
+                onsplitterMouseUp: function(event) {
+                    var splitter = JSM.ui.console.commandEditor.splitter;
+                    if (splitter.resizingFlag && 1 === event.which) {
+                        splitter.resizingFlag = false;
+                        splitter.lastResizingTime = 0;
+
+                        JSM.settings.consoleEditorHeight = JSM.ui.console.commandEditor.codeMirror.getWrapperElement().offsetHeight;
+                        JSM.storage.saveSettings(JSM.settings);
+                    }
+                },
+                onsplitterMouseMove: function(event) {
+                    var splitter = JSM.ui.console.commandEditor.splitter;
+                    var datetime = new Date();
+                    if (splitter.resizingFlag && splitter.lastResizingTime < datetime.getTime()) {
+                        var newSize = event.pageY - splitter.START_POSITION;
+                        if (newSize < splitter.MIN_HEIGHT)
+                            newSize = splitter.MIN_HEIGHT;
+                        JSM.ui.console.commandEditor.codeMirror.setSize(null, newSize);
+                        splitter.lastResizingTime = datetime.getTime() + splitter.RESIZING_TIMEOUT;
+                    }
+                }
             }
         },
         journal: {
@@ -399,6 +461,82 @@ JSM.ui = {
                 JSM.ui.console.journal.elNotesCt.innerHTML = "";
                 JSM.ui.console.journal.items = [];
             }
+        }
+    },
+    report: {
+        init: function() {}
+    },
+    help: {
+        btnShowHotkeysOn: null,
+        btnShowHotkeysOff: null,
+        init: function() {
+            this.btnShowHotkeysOn = document.querySelector('#btn-show-hotkeys-on');
+            this.btnShowHotkeysOff = document.querySelector('#btn-show-hotkeys-off');
+            this.btnShowHotkeysOn.onclick = this.showHotkeys;
+            this.btnShowHotkeysOff.onclick = this.hideHotkeys;
+
+            var hotkeysVisibility = JSM.settings.showHotkeys;
+            if (hotkeysVisibility) {
+                this.showHotkeys(true);
+            } else {
+                this.hideHotkeys(true);
+            }
+        },
+        showHotkeys: function(notSaveToSettingsFlag) {
+            document.body.classList.add('show-hotkeys');
+
+            JSM.ui.help.btnShowHotkeysOn.classList.add('active');
+            JSM.ui.help.btnShowHotkeysOff.classList.remove('active');
+
+            if (notSaveToSettingsFlag) {
+                JSM.settings.showHotkeys = true;
+                JSM.storage.saveSettings(JSM.settings);
+            }
+        },
+        hideHotkeys: function(notSaveToSettingsFlag) {
+            document.body.classList.remove('show-hotkeys');
+
+            JSM.ui.help.btnShowHotkeysOn.classList.remove('active');
+            JSM.ui.help.btnShowHotkeysOff.classList.add('active');
+
+            if (notSaveToSettingsFlag) {
+                JSM.settings.showHotkeys = false;
+                JSM.storage.saveSettings(JSM.settings);
+            }
+        }
+    },
+    hotkeys: {
+        hotkeyAnchorList: {},
+        keysCodes: {},
+        currentKeyCombination: [],
+        init: function() {
+            var anchors = document.querySelectorAll('.hotkey');
+            for (var i = 0, l = anchors.length; i < l; i++) {
+                var anchor = anchors[i];
+                this.hotkeyAnchorList[anchor.innerHTML.toLowerCase().replace('ctrl','control')] = anchor.parentElement;
+            }
+
+            document.onkeydown = this.onKeyDownHandler;
+            document.onkeyup = this.onKeyUpHandler;
+
+            document.addEventListener('blur', function() {
+               JSM.ui.hotkeys.currentKeyCombination = [];
+            }, false);
+        },
+        onKeyDownHandler: function(event) {
+            var combination = JSM.ui.hotkeys.currentKeyCombination;
+            if (-1 === combination.indexOf(event.key)) {
+                combination.push(event.key)
+            }
+            var anchor = JSM.ui.hotkeys.hotkeyAnchorList[combination.join('+').toLowerCase()];
+            if (anchor) {
+                combination = [];
+                setTimeout(anchor.onclick, 1);
+                return false;
+            }
+        },
+        onKeyUpHandler: function(event) {
+            JSM.ui.hotkeys.currentKeyCombination = [];
         }
     }
 }
