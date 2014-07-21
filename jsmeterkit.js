@@ -5,7 +5,7 @@
 
 
 var JSM = {
-    version: '0.3 Alpha',
+    version: '0.4 Alpha',
 
     /*TYPE_FAST_TIME: 0,
     TYPE_BIGEST_COUNT: 1,*/
