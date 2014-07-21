@@ -78,7 +78,7 @@ JSM.ui = {
             1: 'glyphicon-ok-circle green',
             2: 'glyphicon-refresh rotate',
             3: 'glyphicon-cog rotate',
-            4: 'glyphicon-exclamation-sign red'
+            4: 'glyphicon-exclamation-sign red blink'
         },
 
         elMessage: null,
@@ -236,10 +236,10 @@ JSM.ui = {
             }
         },
         onBodyClick: function (event) {
-            setTimeout(JSM.createScopeFunction(function () {
+            setTimeout(jsmCreateScopeFunction(function () {
                 var currentElement = this.originalTarget;
                 var focusFlag = false;
-                while ('string' === typeof(currentElement.tagName)) {
+                while (currentElement && 'string' === typeof(currentElement.tagName)) {
                     if (currentElement.classList.contains('open')) {
                         focusFlag = true;
                         break;
@@ -267,7 +267,9 @@ JSM.ui = {
                 this.elCt = document.querySelector('#command-editor-container');
                 this.codeMirror = CodeMirror(this.elCt, {
                     mode: 'javascript',
-                    lineNumbers: true
+                    lineNumbers: true,
+                    undoDepth: 100,
+                    extraKeys: {"Ctrl-Space": "autocomplete"}
                 });
 
                 this.codeMirror.display.wrapper.classList.add("panel");
@@ -282,11 +284,15 @@ JSM.ui = {
                 if (code) {
                     try {
                         var result = eval(code);
-                        JSM.ui.console.journal.appendNote(
-                            'loc-code-has-been-executed',
-                            ['loc-result', '<pre>' + JSON.stringify(result, null, '\t') + '</pre>'],
-                            JSM.ui.console.journal.NOTE_INFO,
-                            true);
+                        if ('undefined' !== typeof(result)) {
+                            JSM.ui.console.journal.appendNote(
+                                'loc-code-has-been-executed',
+                                ['loc-result', '<pre>' + JSON.stringify(result, null, '\t') + '</pre>'],
+                                JSM.ui.console.journal.NOTE_INFO,
+                                true);
+                        } else {
+                            JSM.ui.showNotify(JSM._('loc-code-has-been-executed'), JSM.ui.statusBar.STATE_SUCCESS);
+                        }
                     } catch (E) {
                         console.log(E);
                         JSM.ui.console.journal.appendNote(
@@ -305,6 +311,7 @@ JSM.ui = {
                 RESIZING_TIMEOUT: 20,
                 MIN_HEIGHT: 300,
                 START_POSITION: null,
+                SPLITTER_OFFSET: 0,
                 lastResizingTime: null,
                 resizingFlag: false,
                 startY: 0,
@@ -312,7 +319,6 @@ JSM.ui = {
                 init: function() {
                     var splitter = document.querySelector('#command-editor-splitter');
                     splitter.onmousedown = this.onsplitterMouseDown;
-                    splitter.onmousemove = this.onsplitterMouseMove;
                     document.body.addEventListener('mouseup', this.onsplitterMouseUp);
                     document.body.addEventListener('mousemove', this.onsplitterMouseMove);
 
@@ -327,9 +333,10 @@ JSM.ui = {
                     var splitter = JSM.ui.console.commandEditor.splitter;
                     if (!splitter.resizingFlag && 1 === event.which) {
                         splitter.resizingFlag = true;
-                        startY = event.pageY;
+                        splitter.SPLITTER_OFFSET = event.pageY - this.offsetTop;
                         var datetime = new Date();
                         splitter.lastResizingTime = datetime.getTime() + splitter.RESIZING_TIMEOUT;
+                        document.body.style.cursor = 'row-resize';
                     }
                 },
                 onsplitterMouseUp: function(event) {
@@ -340,13 +347,14 @@ JSM.ui = {
 
                         JSM.settings.consoleEditorHeight = JSM.ui.console.commandEditor.codeMirror.getWrapperElement().offsetHeight;
                         JSM.storage.saveSettings(JSM.settings);
+                        document.body.style.cursor = null;
                     }
                 },
                 onsplitterMouseMove: function(event) {
                     var splitter = JSM.ui.console.commandEditor.splitter;
                     var datetime = new Date();
                     if (splitter.resizingFlag && splitter.lastResizingTime < datetime.getTime()) {
-                        var newSize = event.pageY - splitter.START_POSITION;
+                        var newSize = event.pageY - splitter.START_POSITION - splitter.SPLITTER_OFFSET;
                         if (newSize < splitter.MIN_HEIGHT)
                             newSize = splitter.MIN_HEIGHT;
                         JSM.ui.console.commandEditor.codeMirror.setSize(null, newSize);
@@ -386,6 +394,8 @@ JSM.ui = {
                 this.elNotesLimitSelect.value = this.notesLimit;
                 this.elNotesLimitSelect.onchange = this.onLimitChange;
                 document.querySelector('#journal-btn-clean').onclick = this.onCleanClick;
+
+                window.echo = jsmCreateScopeFunction(this.appendNote, this);
             },
 
             appendNote: function(title, content, type, tr) {
@@ -397,36 +407,38 @@ JSM.ui = {
                 if ('number' === typeof(type) && type > -1)
                     elNote.classList.add(this.noteClasses[type]);
 
-                if ('string' === typeof(title)) {
+                if ('undefined' !== typeof(title)) {
                     var elNoteTitle = document.createElement('h4');
                     if (tr && 0 === title.indexOf('loc-')) {
                         elNoteTitle.innerHTML = JSM._(title);
                         elNoteTitle.classList.add(title);
                     } else {
-                        elNoteTitle.innerHTML = title;
+                        elNoteTitle.innerHTML = '' + title;
                     }
                     elNote.appendChild(elNoteTitle);
                 }
 
-                var contentIsArray = (content instanceof Array);
-                var contentIndex = (contentIsArray) ? 0 : -1;
-                var length = (contentIsArray) ?  content.length: -1;
-                var contentText = content;
-                do {
-                    if (contentIndex > -1) {
-                        contentText = content[contentIndex];
-                    }
+                if ('undefined' !== typeof(content)) {
+                    var contentIsArray = (content instanceof Array);
+                    var contentIndex = (contentIsArray) ? 0 : -1;
+                    var length = (contentIsArray) ?  content.length: -1;
+                    var contentText = content;
+                    do {
+                        if (contentIndex > -1) {
+                            contentText = content[contentIndex];
+                        }
 
-                    var elNoteContent = document.createElement('p');
-                    if (tr && 0 === contentText.indexOf('loc-')) {
-                        elNoteContent.innerHTML = JSM._(contentText);
-                        elNoteContent.classList.add(contentText);
-                    } else {
-                        elNoteContent.innerHTML = contentText;
-                    }
+                        var elNoteContent = document.createElement('p');
+                        if (tr && 0 === contentText.indexOf('loc-')) {
+                            elNoteContent.innerHTML = JSM._(contentText);
+                            elNoteContent.classList.add(contentText);
+                        } else {
+                            elNoteContent.innerHTML = contentText;
+                        }
 
-                    elNote.appendChild(elNoteContent);
-                } while(contentIsArray && ++contentIndex < length);
+                        elNote.appendChild(elNoteContent);
+                    } while(contentIsArray && ++contentIndex < length);
+                }
                 // todo content
 
                 this.elNotesCt.insertBefore(elNote, this.elNotesCt.firstChild);

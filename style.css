@@ -19,6 +19,11 @@
     padding-left: 24px;
 }
 
+.navbar-header > img {
+    margin: 4px 10px 4px 0px;
+    float: left;
+}
+
 #top .navbar-nav > li {
     cursor: pointer;
 }
@@ -34,6 +39,10 @@
     border-right: 1px solid #444;
     height: 50px;
     background: #fff;
+}
+
+.container {
+    min-width: 980px !important;
 }
 
 .btn-black {
@@ -199,9 +208,12 @@ button > .hotkey {
 }
 
 .note {
-    border-left: 3px solid #EEEEEE;
-    margin: 20px 0;
-    padding: 20px;
+    border: 1px solid #cccccc;
+    border-radius: 2px;
+    border-left: 3px solid #cccccc;
+    margin: 10px 0;
+    padding: 10px;
+    padding-bottom: 5px;
 }
 .note h4 {
     margin-bottom: 5px;
@@ -257,6 +269,13 @@ button > .hotkey {
     animation-duration: 1s;
 }
 
+.blink {
+    animation-name: anim-blink;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 500ms;
+}
+
 @keyframes anim-rotate {
     from {
         transform: rotate(0deg);
@@ -266,3 +285,15 @@ button > .hotkey {
     }
 }
 
+@keyframes anim-blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

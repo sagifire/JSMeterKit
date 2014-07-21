@@ -7,8 +7,8 @@
 var JSM = {
     version: '0.3 Alpha',
 
-    TYPE_FAST_TIME: 0,
-    TYPE_BIGEST_COUNT: 1,
+    /*TYPE_FAST_TIME: 0,
+    TYPE_BIGEST_COUNT: 1,*/
 
     project: {},
     settings: {},
@@ -67,7 +67,7 @@ var JSM = {
         for(var i = 0; i < list.length; i++) {
             this.include(
                 list[i],
-                this.createScopeFunction(function(){
+                jsmCreateScopeFunction(function(){
                     this.progress++;
                     if(this.progress>=this.needFiles) {
                         if (this.hasError) {
@@ -77,7 +77,7 @@ var JSM = {
                         }
                     }
                 }, workerScope),
-                this.createScopeFunction(function(){
+                jsmCreateScopeFunction(function(){
                     this.hasError = true;
                     this.progress++;
                     if(this.progress>=this.needFiles)
@@ -85,15 +85,10 @@ var JSM = {
                 }, workerScope));
         }
     },
-    createScopeFunction: function(func, scope) {
-        return function() {
-            scope.origin = this;
-            scope.arguments = arguments;
-            return func.apply(scope);
-        };
-    },
 
     init: function(config) {
+        JSM.debug = new JSMDebug(true);
+        JSM.client = new JSMClient();
         this.extend(this.config, config);
         if (this.ui.readyToInit) {
             this.ui.init();
